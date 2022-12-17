@@ -29,6 +29,7 @@ jobs:
           context: .
           platforms: linux/arm64,linux/arm/v7,linux/amd64
           push: true
+          file: /home/runner/work/Sukt.Core/Sukt.Core/app/Dockerfile-guacenc # 指定Dockerfile
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/guacamole-server:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/guacamole-server:1.4.0
