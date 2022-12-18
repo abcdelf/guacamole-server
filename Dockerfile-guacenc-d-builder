@@ -20,7 +20,7 @@
 
 # Use Debian as base for the build
 ARG DEBIAN_VERSION=stable
-FROM debian:${DEBIAN_VERSION} AS builder
+FROM debian:${DEBIAN_VERSION}
 # FROM debian:${DEBIAN_VERSION}
 
 
@@ -167,36 +167,3 @@ RUN ldd ${PREFIX_DIR}/bin/guacenc | tr -s '[:blank:]' '\n' | grep '^/' | \
 # #####################################################################
 # # Use same Debian as the base for the runtime image
 # FROM jrottenberg/ffmpeg:4.1-alpine
-
-ARG DEBIAN_VERSION=stable
-FROM debian:${DEBIAN_VERSION}
-
-# RUN apt-get update                 && \
-#     apt-get install -y ffmpeg       \
-#     && rm -rf /var/lib/apt/lists/*
-
-# Override existing ffmpeg ENTRYPOINT
-
-# Base directory for installed build artifacts.
-# Due to limitations of the Docker image build process, this value is
-# duplicated in an ARG in the first stage of the build. See also the
-# CMD directive at the end of this build stage.
-ARG PREFIX_DIR=/opt/guacamole
-
-
-# Runtime environment
-ENV LC_ALL=C.UTF-8
-ENV LD_LIBRARY_PATH ${PREFIX_DIR}/lib:$LD_LIBRARY_PATH
-ENV PATH ${PREFIX_DIR}/bin:$PATH
-
-# Copy guacenc and lib
-COPY --from=builder ${PREFIX_DIR} ${PREFIX_DIR}
-# Copy shared library required while executing guacenc
-COPY --from=builder ${PREFIX_DIR}/deps ${PREFIX_DIR}/lib
-
-# # Bring runtime environment up to date and install runtime dependencies
-# RUN apt-get update                                          && \
-#     apt-get install -y $(cat "${PREFIX_DIR}"/DEPENDENCIES)  && \
-#     rm -rf /var/lib/apt/lists/*
-
-ENTRYPOINT []

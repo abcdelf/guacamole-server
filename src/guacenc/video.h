@@ -102,6 +102,8 @@ typedef struct guacenc_video {
      */
     guac_timestamp last_timestamp;
 
+    bool is_key_frame;
+
 } guacenc_video;
 
 /**

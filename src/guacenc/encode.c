@@ -84,9 +84,70 @@ static int guacenc_read_instructions(guacenc_display* display,
 
 }
 
+int get_config(const char* path, int* width, int* height) {
+    /* Open input file */
+    int fd = open(path, O_RDONLY);
+    if (fd < 0) {
+        guacenc_log(GUAC_LOG_ERROR, "%s: %s", path, strerror(errno));
+        return 1;
+    }
+
+    /* Obtain guac_socket wrapping file descriptor */
+    guac_socket* socket = guac_socket_open(fd);
+    if (socket == NULL) {
+        guacenc_log(GUAC_LOG_ERROR, "%s: %s", path,
+                guac_status_string(guac_error));
+        close(fd);
+        return 1;
+    }
+
+    /* Attempt to read all instructions in the file */
+
+    /* Obtain Guacamole protocol parser */
+    guac_parser* parser = guac_parser_alloc();
+    if (parser == NULL) {
+        guac_socket_free(socket);
+        close(fd);
+        return 1;
+    }
+
+    /* Continuously read and handle all instructions */
+    while (!guac_parser_read(parser, socket, -1)) {
+
+        if (strcmp(parser->opcode, "size") == 0) {
+            // parser->argc, parser->argv
+            char** argv = parser->argv;
+            /* Verify argument count */
+            if (parser->argc < 3) {
+                guacenc_log(GUAC_LOG_WARNING, "\"size\" instruction incomplete");
+                return 1;
+            }
+
+            /* Parse arguments */
+            int index = atoi(argv[0]);
+            if (index ==0 ){
+                *width = atoi(argv[1]);
+                *height = atoi(argv[2]);
+
+                guacenc_log(GUAC_LOG_INFO, "Handling of \"%s\" instruction; index=%d; width=%d; height=%d ;", parser->opcode, index, *width, *height);
+
+                break;
+            }
+        }
+    }
+
+    /* Parse complete */
+    guac_parser_free(parser);
+    /* Close input and finish encoding process */
+    guac_socket_free(socket);
+    close(fd);
+    return 0;
+}
+
 int guacenc_encode(const char* path, const char* out_path, const char* codec,
         int width, int height, int bitrate, bool force) {
-
+    guacenc_log(GUAC_LOG_INFO, "Video will be encoded at %ix%i "
+            "and %i bps.", width, height, bitrate);
     /* Open input file */
     int fd = open(path, O_RDONLY);
     if (fd < 0) {

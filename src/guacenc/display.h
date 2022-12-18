@@ -89,6 +89,8 @@ typedef struct guacenc_display {
      */
     guac_timestamp last_sync;
 
+    bool last_cmd_is_sync;
+
     /**
      * The video that this display is recording to.
      */

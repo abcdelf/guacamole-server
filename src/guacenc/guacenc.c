@@ -97,9 +97,6 @@ int main(int argc, char* argv[]) {
 
     guacenc_log(GUAC_LOG_INFO, "%i input file(s) provided.", total_files);
 
-    guacenc_log(GUAC_LOG_INFO, "Video will be encoded at %ix%i "
-            "and %i bps.", width, height, bitrate);
-
     /* Encode all input files */
     for (i = optind; i < argc; i++) {
 
@@ -117,8 +114,15 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
+        int r = get_config(path, &width, &height);
+        if (r!=0) {
+            width = GUACENC_DEFAULT_WIDTH;
+            height = GUACENC_DEFAULT_HEIGHT;
+        }
+
         /* Attempt encoding, log granular success/failure at debug level */
-        if (guacenc_encode(path, out_path, "mpeg4",
+        if (guacenc_encode(path, out_path, "libx264",
+        // if (guacenc_encode(path, out_path, "mpeg4",
                     width, height, bitrate, force)) {
             failures++;
             guacenc_log(GUAC_LOG_DEBUG,

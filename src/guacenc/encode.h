@@ -61,5 +61,7 @@
 int guacenc_encode(const char* path, const char* out_path, const char* codec,
         int width, int height, int bitrate, bool force);
 
+int get_config(const char* path, int* width, int* height);
+
 #endif
 

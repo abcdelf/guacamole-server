@@ -24,6 +24,7 @@
 
 #include <libavcodec/avcodec.h>
 #include <libavutil/common.h>
+#include <libavutil/opt.h>
 #include <libavutil/imgutils.h>
 #include <guacamole/client.h>
 
@@ -167,7 +168,11 @@ int guacenc_avcodec_encode_video(guacenc_video* video, AVFrame* frame) {
     }
 
 #else
-
+    // if (frame !=NULL && frame->key_frame==1) {
+    //     guacenc_log(GUAC_LOG_WARNING, "key frame = %d, pts=%d",
+    //                 frame->key_frame, frame->pts);
+    // }
+    
     /* Write frame to video */
     int result = avcodec_send_frame(video->context, frame);
 
@@ -236,13 +241,33 @@ AVCodecContext* guacenc_build_avcodeccontext(AVStream* stream, AVCodec* codec,
         context->bit_rate = bitrate;
         context->width = width;
         context->height = height;
-        context->gop_size = gop_size;
-        context->qmax = qmax;
-        context->qmin = qmin;
+        // context->gop_size = gop_size;
+        context->gop_size = 250;
+        context->qmax = 69;
+        context->keyint_min = 25;
+        context->max_b_frames = 3;
+        context->refs = 3;
+        context->qmin = 0;
         context->pix_fmt = pix_fmt;
         context->time_base = time_base;
         stream->time_base = time_base;
+
+        /// Compression efficiency (slower -> better quality + higher cpu%)
+        /// [ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow]
+        /// Set this option to "ultrafast" is critical for realtime encoding
+        // av_opt_set(context->priv_data, "preset", "ultrafast", 0);
+
+        /// Compression rate (lower -> higher compression) compress to lower size, makes decoded image more noisy
+        /// Range: [0; 51], sane range: [18; 26]. I used 35 as good compression/quality compromise. This option also critical for realtime encoding
+        av_opt_set(context->priv_data, "crf", "23", 1);
+
+        /// Change settings based upon the specifics of input
+        /// [psnr, ssim, grain, zerolatency, fastdecode, animation]
+        /// This option is most critical for realtime encoding, because it removes delay between 1th input frame and 1th output packet.
+        // av_opt_set(context->priv_data, "tune", "zerolatency", 0);
+
     }
+    
     return context;
 #endif
 

@@ -50,15 +50,31 @@ int guacenc_handle_instruction(guacenc_display* display, const char* opcode,
     /* Search through mapping for instruction handler having given opcode */
     guacenc_instruction_handler_mapping* current = guacenc_instruction_handler_map;
     while (current->opcode != NULL) {
-
+         
+        if (strcmp("sync", opcode) == 0 && display->last_cmd_is_sync == true) {
+            display->output->is_key_frame = false;
+            // return 0;
+        }
         /* Invoke handler if opcode matches (if defined) */
         if (strcmp(current->opcode, opcode) == 0) {
 
             /* Invoke defined handler */
             guacenc_instruction_handler* handler = current->handler;
-            if (handler != NULL)
-                return handler(display, argc, argv);
+            if (handler != NULL) {
+                if (strcmp("sync", opcode) != 0) {
+                    display->output->is_key_frame = true;
+                }
+                int res = handler(display, argc, argv);
 
+                if (strcmp("sync", opcode) == 0) {
+                    display->last_cmd_is_sync = true;
+                } else 
+                {
+                    display->last_cmd_is_sync = false;
+                }
+                return res;
+            }
+                
             /* Log defined but unimplemented instructions */
             guacenc_log(GUAC_LOG_DEBUG, "\"%s\" not implemented", opcode);
             return 0;
