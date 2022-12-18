@@ -29,7 +29,9 @@
 #include <stdlib.h>
 
 int guacenc_handle_sync(guacenc_display* display, int argc, char** argv) {
-
+    if (display->output->is_key_frame == false) {
+        return 0;
+    }
     /* Verify argument count */
     if (argc < 1) {
         guacenc_log(GUAC_LOG_WARNING, "\"sync\" instruction incomplete");

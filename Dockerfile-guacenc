@@ -186,13 +186,13 @@ ARG PREFIX_DIR=/opt/guacamole
 
 # Runtime environment
 ENV LC_ALL=C.UTF-8
-ENV LD_LIBRARY_PATH ${PREFIX_DIR}/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH ${PREFIX_DIR}/deps:$LD_LIBRARY_PATH
 ENV PATH ${PREFIX_DIR}/bin:$PATH
 
 # Copy guacenc and lib
 COPY --from=builder ${PREFIX_DIR} ${PREFIX_DIR}
 # Copy shared library required while executing guacenc
-COPY --from=builder ${PREFIX_DIR}/deps ${PREFIX_DIR}/lib
+# COPY --from=builder ${PREFIX_DIR}/deps ${PREFIX_DIR}/lib
 
 # # Bring runtime environment up to date and install runtime dependencies
 # RUN apt-get update                                          && \

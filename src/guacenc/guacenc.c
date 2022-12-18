@@ -40,7 +40,8 @@ int main(int argc, char* argv[]) {
     int width = GUACENC_DEFAULT_WIDTH;
     int height = GUACENC_DEFAULT_HEIGHT;
     int bitrate = GUACENC_DEFAULT_BITRATE;
-
+    bool isInputS = false;
+    
     /* Parse arguments */
     int opt;
     while ((opt = getopt(argc, argv, "s:r:f")) != -1) {
@@ -51,6 +52,7 @@ int main(int argc, char* argv[]) {
                 guacenc_log(GUAC_LOG_ERROR, "Invalid dimensions.");
                 goto invalid_options;
             }
+            isInputS = true;
         }
 
         /* -r: Bitrate (bits per second) */
@@ -113,12 +115,25 @@ int main(int argc, char* argv[]) {
                     "Name too long", path);
             continue;
         }
-
-        int r = get_config(path, &width, &height);
-        if (r!=0) {
-            width = GUACENC_DEFAULT_WIDTH;
-            height = GUACENC_DEFAULT_HEIGHT;
+        if (isInputS == false) {
+            int r = get_config(path, &width, &height);
+            if (r==0) {
+                if (width>GUACENC_DEFAULT_WIDTH || height>GUACENC_DEFAULT_HEIGHT) {
+                    int scale_f = 2;
+                    if (width >= height) {
+                        scale_f = (width/GUACENC_DEFAULT_WIDTH)*2;
+                    } else {
+                        scale_f = (width/GUACENC_DEFAULT_WIDTH)*2;
+                    }
+                    width = (width/scale_f)*2;
+                    height = (height/scale_f)*2;
+                }
+           } else {
+                width = GUACENC_DEFAULT_WIDTH;
+                height = GUACENC_DEFAULT_HEIGHT;
+           }
         }
+       
 
         /* Attempt encoding, log granular success/failure at debug level */
         if (guacenc_encode(path, out_path, "libx264",

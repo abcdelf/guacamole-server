@@ -29,14 +29,14 @@
  * command line. Note that different codecs will have different restrictions
  * regarding legal widths.
  */
-#define GUACENC_DEFAULT_WIDTH 640
+#define GUACENC_DEFAULT_WIDTH 1024
 
 /**
  * The height of the output video, in pixels, if no other height is given on the
  * command line. Note that different codecs will have different restrictions
  * regarding legal heights.
  */
-#define GUACENC_DEFAULT_HEIGHT 480
+#define GUACENC_DEFAULT_HEIGHT 768
 
 /**
  * The desired bitrate of the output video, in bits per second, if no other
