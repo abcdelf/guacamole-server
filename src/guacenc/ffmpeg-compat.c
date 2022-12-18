@@ -259,7 +259,7 @@ AVCodecContext* guacenc_build_avcodeccontext(AVStream* stream,const AVCodec* cod
 
         /// Compression rate (lower -> higher compression) compress to lower size, makes decoded image more noisy
         /// Range: [0; 51], sane range: [18; 26]. I used 35 as good compression/quality compromise. This option also critical for realtime encoding
-        av_opt_set(context->priv_data, "crf", "23", 1);
+        av_opt_set(context->priv_data, "crf", "20", 1);
 
         /// Change settings based upon the specifics of input
         /// [psnr, ssim, grain, zerolatency, fastdecode, animation]
