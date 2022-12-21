@@ -260,7 +260,7 @@ int guacenc_video_advance_timeline(guacenc_video* video,
         /* Keep previous timestamp if insufficient time has elapsed */
         if (elapsed == 0)
             return 0;
-        // elapsed = 1;
+
         /* Use frame time as last_timestamp */
         next_timestamp = video->last_timestamp
                         + elapsed * 1000 / GUACENC_VIDEO_FRAMERATE;

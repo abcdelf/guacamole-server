@@ -57,6 +57,8 @@ extern "C" {
  *     Zero on success, non-zero if an error prevented successful encoding of
  *     the video.
  */
+#include <stdbool.h>
+
 extern int get_parser_code(const char* opcode, int* argc, char** argv, bool* status);
 
 int guac_encode_v1(int(*get_parser_code)(char*, int*, char**, bool*) ,const char* out_path, const char* codec,

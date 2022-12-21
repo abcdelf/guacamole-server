@@ -48,3 +48,7 @@ doc/*/doxygen-output
 
 # IDE metadata
 nbproject/
+
+.DS_Store
+.history
+.vscode
