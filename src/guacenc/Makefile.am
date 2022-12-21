@@ -24,8 +24,50 @@
 #
 
 AUTOMAKE_OPTIONS = foreign 
+ACLOCAL_AMFLAGS = -I m4
 
 bin_PROGRAMS = guacenc
+lib_LTLIBRARIES = libguacencode.la
+
+libguacencodeincdir = $(includedir)
+libguacencodeinc_HEADERS = \
+    guac-encode.h
+
+libguacencode_la_SOURCES =  \
+    buffer.c                \
+    cursor.c                \
+    display.c               \
+    display-buffers.c       \
+    display-image-streams.c \
+    display-flatten.c       \
+    display-layers.c        \
+    display-sync.c          \
+    encode.c                \
+    ffmpeg-compat.c         \
+    guacenc.c               \
+    image-stream.c          \
+    instructions.c          \
+    instruction-blob.c      \
+    instruction-cfill.c     \
+    instruction-copy.c      \
+    instruction-cursor.c    \
+    instruction-dispose.c   \
+    instruction-end.c       \
+    instruction-img.c       \
+    instruction-mouse.c     \
+    instruction-move.c      \
+    instruction-rect.c      \
+    instruction-shade.c     \
+    instruction-size.c      \
+    instruction-sync.c      \
+    instruction-transfer.c  \
+    jpeg.c                  \
+    layer.c                 \
+    log.c                   \
+    parse.c                 \
+    png.c                   \
+    video.c                 \
+    guac-encode.c
 
 man_MANS =        \
     man/guacenc.1
@@ -85,6 +127,8 @@ guacenc_SOURCES =           \
 if ENABLE_WEBP
 guacenc_SOURCES += webp.c
 noinst_HEADERS  += webp.h
+
+libguacencode_la_SOURCES += webp.c
 endif
 
 guacenc_CFLAGS =            \
@@ -94,6 +138,27 @@ guacenc_CFLAGS =            \
     @AVUTIL_CFLAGS@         \
     @LIBGUAC_INCLUDE@       \
     @SWSCALE_CFLAGS@
+
+libguacencode_la_CFLAGS = \
+    -Werror -Wall -pedantic \
+    @AVCODEC_CFLAGS@        \
+    @AVFORMAT_CFLAGS@       \
+    @AVUTIL_CFLAGS@         \
+    @LIBGUAC_INCLUDE@       \
+    @SWSCALE_CFLAGS@
+
+libguacencode_la_LDFLAGS =   \
+    -version-info 20:0:0 \
+    -no-undefined        \
+    @AVCODEC_LIBS@  \
+    @AVFORMAT_LIBS@ \
+    @AVUTIL_LIBS@   \
+    @CAIRO_LIBS@    \
+    @JPEG_LIBS@     \
+    @SWSCALE_LIBS@  \
+    @WEBP_LIBS@     \
+    @LIBGUAC_LTLIB@       
+       
 
 guacenc_LDADD =     \
     @LIBGUAC_LTLIB@
